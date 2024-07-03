@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" >
+<head>
+    <meta charset="UTF-8">
+    <title>커뮤-게시판 detail</title>
+    <link rel="stylesheet" href="@{/css/layout.css}">
+    <link rel="stylesheet" href="@{/css/detail.css}">
+
+</head>
+<body>
+<div th:replace="~{/layout/header :: header}"></div>
+
+<!--main-->
+<div id="main" class="container">
+
+    <header class="head">
+        <h1 class="fw-bold">커뮤니티</h1>
+        <p>게시글 상세보기</p>
+    </header>
+
+<!--    table-->
+    <div class="content" th:object="${board}">
+        <div class="mb-3">
+         <div class="form-label">번호</div>
+            <label>
+            <input type="text" name="boardId" class="form-control" th:value="*{boardId}" readonly/>
+            </label>
+        </div>
+
+        <div class="mb-3">
+            <div class="form-label">제목</div>
+            <label>
+                <input type="text" class="form-control" th:value="*{boardTitle}" readonly/>
+            </label>
+        </div>
+
+        <div class="mb-3">
+            <div class="form-label">내용</div>
+            <label>
+                <input type="text" class="form-control" th:value="*{boardContent}" readonly/>
+            </label>
+        </div>
+        <div class="mb-3">
+            <div class="form-label">작성일</div>
+            <label>
+                <input type="text" class="form-control"
+                readonly th:value="*{#temporals.format(boardRegisterDate,'yy년 M월 d일')}">
+            </label>
+        </div>
+
+        <div class="mb-3">
+           <div class="form-label">조회수</div>
+            <label>
+                <input type="text" class="form-control" readonly th:value="*{boardViews}"/>
+            </label>
+        </div>
+
+
+<!--        첨부파일 있는 경우에만 표시-->
+        <div>
+            <div class="mb-3" th:if="${not #lists.isEmpty(files)}">
+                <h4>첨부파일</h4>
+                <div class="uploadResult">
+                    <ul>
+                        <li th:each="file:${files}">
+                            <a th:href="@{/download/{fieldiId}(fileId=${file.fileId})" th:text="${file.originalFileName}"></a>
+                            <span th:text="${file.fileSize / 1024 + 'KB'}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div sec:authorize="isAuthenticated()">
+            <input type="hidden" name="loginId" th:value="${#authentication.getPrincipal().getProviderId()}">
+            <div style="text-align: right;" th:if="${#authentication.getPrincipal().getProviderId() == board.providerId}">
+                <button type="button" class="btn btn-primary" onclick="goUpdate()">수정</button>
+                <button type="button" class="btn btn-danger" onclick="goDelete()">삭제</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<!--댓글 부분-->
+<div class="comments-section mt-5">
+    <h3>댓글</h3>
+
+<!--    로그인 되어있을 때만 표시-->
+    <div sec:authorize="isAuthenticated()">
+    <div class="comment-form mt-4">
+        <form id="commentForm" method="post">
+            <div class="mb-3">
+                <label for="commentContent" class="form-label">댓글 남기기</label>
+                <textarea class="form-control id=commentContent" rows="3"
+                          placeholder="여기에 댓글을 남기세요. !!">  </textarea>
+</div>
+
+
+            <button type="button" class="btn btn-primary" onclick="addComment()"
+                    style="margin-bottom:20px">댓글 작성</button>
+        </form>
+    </div>
+</div>
+<div class="comment-list mt-4">
+    <div class="comment-card">
+        <div class="comment-body">
+            <div class="comment-title">작성자 이름</div>
+            <div class="comment-subtitle">2024~~</div>
+            <p class="comment-text">댓글본문이겠지</p>
+<!--            수정과 삭제 버튼-->
+            <div class="comment-actions">
+                <button onclick="" class="btn btn-primary">수정</button>
+                <button onclick="" class="btn btn-primary">삭제</button>
+            </div>
+        </div>
+    </div>
+        <div class="comment-card">
+            <div class="comment-body">
+                <div class="comment-title">작성자 이름</div>
+                <div class="comment-subtitle">2025~ </div>
+                <p class="comment-text">댓글본문임</p>
+            </div>
+            <div class="comment-actions">
+                <button onclick="" class="btn btn-primary">수정</button>
+                <button onclick="" class="btn btn-danger">삭제</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script th:src="@{/js/detail.js}"></script>
+</body>
+</html>

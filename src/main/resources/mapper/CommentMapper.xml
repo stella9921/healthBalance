@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.healthbalance.mapper.CommentMapper">
+
+
+
+<!--    List<CommentListDTO> selectCommentById(Long boardId);-->
+
+<!--    void insertComment(CommentVO commentVO);-->
+
+<!--    void deleteComment(Long commentId);-->
+
+<!--    void updateComment(CommentVO commentVO);-->
+
+
+<!--    특정 게시글의 모든 댓글 조회-->
+    <select id="selectCommentById" resultType="CommentListDTO">
+        select u.name, c.*
+        from tbl_users u join tbl_comment c
+        on u.PROVIDER_ID = c.PROVIDER_ID
+        and BOARD_ID = #{boardId}
+        order by COMMENT_UPDATE_DATE desc
+    </select>
+
+
+<!--    특정 게시글에 댓글 추가-->
+    <insert id="insertComment">
+        insert into TBL_COMMENT(COMMENT_ID, BOARD_ID, PROVIDER_ID, COMMENT_CONTENT, COMMENT_REGISTER_DATE, COMMENT_UPDATE_DATE)
+        values (seq_comment.nextval, #{boardId}, #{providerId},#{commentContent}, sysdate,sysdate);
+    </insert>
+
+
+<!--    댓글 삭제-->
+    <update id="updateComment">
+        update TBL_COMMENT
+        set
+            COMMENT_CONTENT=#{commentContent},
+            COMMENT_UPDATE_DATE = sysdate
+        where COMMENT_ID =#{commentId}
+
+    </update>
+</mapper>
